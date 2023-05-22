@@ -33,7 +33,7 @@ resource "aws_instance" "server" {
   }
 
   tags = {
-    Name = "Server"
+    project = "Server-1"
   }
 }
 

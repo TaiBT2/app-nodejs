@@ -18,8 +18,12 @@ pipeline {
                 checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TaiBT2/app-nodejs.git']])
                 sh ' terraform -chdir=./devops-tool/infra init'
                 sh ' terraform -chdir=./devops-tool/infra apply -auto-approve'
+                sh " aws ec2 describe-instances \
+                    --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                    --filters 'Name=tag:project','Values=Server-1' \
+                    --output text >> devops-tool/ansible/inventory.txt"
+                sh 'cat devops-tool/ansible/inventory.txt'
             }
-          
         }
         stage ("build image and deploy server") {
             agent any
@@ -53,8 +57,6 @@ pipeline {
                                         sh "ssh -o StrictHostKeyChecking=no ubuntu@${HOST} docker run -d -p 4000:4000 ${registry}"
                                     }
                                 }
-                                
-                                
                         }
                     }
                 }
