@@ -4,19 +4,21 @@ pipeline {
         dockerTag=getDockerTag();
         registry ="taibt2docker/nodejs-app:${dockerTag}"
         OlD_CONTAINER = "dd";
-        AWS_ACCESS_KEY_ID     = credentials('Access-key-ID')
-        AWS_SECRET_ACCESS_KEY = credentials('Secret-access-key')
 	}
 
     stages {
-        stage ("test agent") {
-            agent { label 'terraform-agent' }
-            steps {
-                sh ' terraform -chdir=./devops-tool/infra init'
-                sh ' terraform -chdir=./devops-tool/infra apply'
-            }
+        // stage ("test agent") {
+        //     agent { label 'terraform-agent' }
+        //     environment {
+        //         AWS_ACCESS_KEY_ID     = credentials('Access-key-ID')
+        //         AWS_SECRET_ACCESS_KEY = credentials('Secret-access-key')
+        //     }
+        //     steps {
+        //         sh ' terraform -chdir=./devops-tool/infra init'
+        //         sh ' terraform -chdir=./devops-tool/infra apply'
+        //     }
           
-        }
+        // }
         stage ("build image and deploy server") {
             agent any
             stages {
