@@ -9,16 +9,14 @@ pipeline {
     stages {
         stage ("test agent") {
             agent { label 'terraform-agent' }
-            // environment {
-            //     AWS_ACCESS_KEY_ID     = credentials('Access-key-ID')
-            //     AWS_SECRET_ACCESS_KEY = credentials('Secret-access-key')
-            // }
-            // steps {
-            //     sh ' terraform -chdir=./devops-tool/infra init'
-            //     sh ' terraform -chdir=./devops-tool/infra apply'
-            // }
+            environment {
+                AWS_ACCESS_KEY_ID     = credentials('Access-key-ID')
+                AWS_SECRET_ACCESS_KEY = credentials('Secret-access-key')
+            }
             steps {
-                sh "echo hello"
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TaiBT2/app-nodejs.git']])
+                sh ' terraform -chdir=./devops-tool/infra init'
+                sh ' terraform -chdir=./devops-tool/infra apply'
             }
           
         }
