@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  mydb
+  labels:
+    app:  mydb
+spec:
+  selector:
+    matchLabels:
+      app: mydb
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app:  mydb
+    spec:
+      containers:
+      - name:  mydb
+        image: mysql:5.6
+        resources: {}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: password
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: data-config
+              key: mysql_user
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+                name: appsecret
+                key: password
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: data-config
+              key: mysql_db
+        ports:
+        - containerPort:  3306
+          name:  mydb
+        volumeMounts:
+        - name: database
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: database
+          configMap:
+            name: db-config
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mydb-svc
+  namespace: default
+spec:
+  selector:
+    app: mydb
+  ports:
+  - name: mydb-svc
+    protocol: TCP
+    port: 3306
+ 

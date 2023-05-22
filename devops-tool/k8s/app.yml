@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  nodejsapp
+  namespace: default
+  labels:
+    app: nodejsapp
+spec:
+  selector:
+    matchLabels:
+      app: nodejsapp
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  nodejsapp
+    spec:
+      containers:
+      - name: nodejsapp
+        image: taibt2docker/nodejs-app:v1
+        resources: {}
+        env:
+        - name: DATABASE_USER
+          valueFrom:
+            configMapKeyRef:
+              name: data-config
+              key: mysql_user
+        - name: DATABASE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: data-config
+              key: db_host
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: data-config
+              key: node_env
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: password
+        - name: DATABASE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: data-config
+              key: mysql_db
+        ports:
+        - containerPort: 4000
+          name:  nodejsapp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejsapp
+  namespace: default
+spec:
+  selector:
+    app: nodejsapp
+  type: ClusterIP 
+  ports:
+  - name: nodejsapp
+    protocol: TCP
+    port: 4000
+    targetPort: 4000

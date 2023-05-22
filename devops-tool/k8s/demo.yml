@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  myapp
+  labels:
+    app:  myapp
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  myapp
+    spec:
+      containers:
+      - name:  myapp
+        image:  taibt2docker/nodejs-app:v1
+        resources: {}
+        env:
+        - name: DATABASE_HOST
+          value: db-server.ciaquok9udjj.ap-southeast-1.rds.amazonaws.com 
+        - name: DATABASE_USER
+          value: admin
+        - name: DATABASE_PASSWORD
+          value: Laodai123
+        - name: DATABASE_NAME
+          value: linksdb
+        - name: NODE_ENV
+          value: development
+        ports:
+        - containerPort: 4000
+          name:  myapp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp
+  namespace: default
+spec:
+  selector:
+    app: myapp
+  type: ClusterIP 
+  ports:
+  - name: myapp
+    protocol: TCP
+    port: 4000
+    targetPort: 4000

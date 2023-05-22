@@ -1,8 +1,0 @@
-node_modules
-pnpm-lock.yaml
-
-# environemnt variables
-.env
-
-# dist
-dist

@@ -1,0 +1,11 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: data-config
+  namespace: default
+data:
+  mysql_user: fazt
+  mysql_db: linksdb
+  db_host: mydb-svc
+  node_env: development
+  
