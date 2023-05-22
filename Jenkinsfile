@@ -34,7 +34,7 @@ pipeline {
                             } catch (Exception e) {
                                 echo 'Exception occurred: ' + e.toString()
                             } finally {
-                                sh "ssh -o StrictHostKeyChecking=no ubuntu@34.230.21.186 docker run -p 4000:4000 ${dockerTag}"
+                                sh "ssh -o StrictHostKeyChecking=no ubuntu@34.230.21.186 docker run -p 4000:4000 ${registry}"
                             }
                         }
                         
