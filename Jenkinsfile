@@ -17,7 +17,7 @@ pipeline {
             steps {
                 checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TaiBT2/app-nodejs.git']])
                 sh ' terraform -chdir=./devops-tool/infra init'
-                sh ' terraform -chdir=./devops-tool/infra apply'
+                sh ' terraform -chdir=./devops-tool/infra apply -auto-approve'
             }
           
         }
