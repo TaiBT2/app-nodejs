@@ -3,7 +3,7 @@ pipeline {
     environment {
         dockerTag=getDockerTag();
         registry ="taibt2docker/nodejs-app:${dockerTag}"
-        OlD_CONTAINER = "";
+        OlD_CONTAINER = "d";
 	}
 
     stages {
@@ -28,6 +28,7 @@ pipeline {
                             OlD_CONTAINER =sh (
                                 script : "ssh -o StrictHostKeyChecking=no ubuntu@34.230.21.186  CONTAINER=`docker ps -q`"
                             )
+                            sh "echo ${OlD_CONTAINER}"
                             try {
                                 sh "ssh -o StrictHostKeyChecking=no ubuntu@34.230.21.186 docker rm -f ${OlD_CONTAINER}"
                             } catch (Exception e) {
