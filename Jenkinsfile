@@ -40,15 +40,16 @@ pipeline {
                                         script : "ssh -o StrictHostKeyChecking=no ubuntu@34.230.21.186  docker ps -q",
                                         returnStdout: true
                                     )
+                                    sh "echo ${OlD_CONTAINER}"
+                                    try {
+                                        sh "ssh -o StrictHostKeyChecking=no ubuntu@34.230.21.186 docker rm -f ${OlD_CONTAINER}"
+                                    } catch (Exception e) {
+                                        echo 'Exception occurred: ' + e.toString()
+                                    } finally {
+                                        sh "ssh -o StrictHostKeyChecking=no ubuntu@34.230.21.186 docker run -d -p 4000:4000 ${registry}"
+                                    }
                                 }
-                                sh "echo ${OlD_CONTAINER}"
-                                try {
-                                    sh "ssh -o StrictHostKeyChecking=no ubuntu@34.230.21.186 docker rm -f ${OlD_CONTAINER}"
-                                } catch (Exception e) {
-                                    echo 'Exception occurred: ' + e.toString()
-                                } finally {
-                                    sh "ssh -o StrictHostKeyChecking=no ubuntu@34.230.21.186 docker run -d -p 4000:4000 ${registry}"
-                                }
+                                
                                 
                         }
                     }
