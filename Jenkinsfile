@@ -25,9 +25,15 @@ pipeline {
             steps {
                 sshagent(['ssh-server-admin']) {
                         script {
-                            OlD_CONTAINER =sh (
-                                script : "ssh -o StrictHostKeyChecking=no ubuntu@34.230.21.186  docker ps -q"
-                            )
+                            // OlD_CONTAINER =sh (
+                            //     script : "ssh -o StrictHostKeyChecking=no ubuntu@34.230.21.186  docker ps -q"
+                            // )
+                            def remote = [:]
+                            remote.user = ubuntu
+                            remote.name = 'ubuntu'
+                            remote.host = '34.230.21.186'
+                            remote.allowAnyHosts = true
+                            OlD_CONTAINER = sshCommand remote:remote, command: "docker ps -q"
                             sh "echo ${OlD_CONTAINER}"
                             try {
                                 sh "ssh -o StrictHostKeyChecking=no ubuntu@34.230.21.186 docker rm -f ${OlD_CONTAINER}"
