@@ -27,12 +27,10 @@ pipeline {
                         script: "cat devops-tool/ansible/inventory.txt",
                         returnStdout: true
                     )
+                    sh 'echo ${HOST}'
                 }
-                sh 'echo ${HOST}'
+                
             }
-        }
-        stage ("configure") {
-
         }
         stage ("build image and deploy server") {
             agent any
