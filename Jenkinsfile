@@ -33,11 +33,16 @@ pipeline {
                     --filters "Name=tag:project","Values=${PROJECT}" \
                     --output text >> devops-tool/ansible/inventory.txt'
                 script {
-                    HOST =sh (
+                    try {
+                        def ip =sh (
                         "cat devops-tool/ansible/inventory.txt",
-                        returnStdout: true
-                    ).trim()
-                    sh 'echo ${HOST}'
+                        returnStdout: true).trim()
+                        HOST = ip
+                        sh 'echo ${HOST}'
+                    } catch (Exception e) {
+                        echo 'Exception occurred: ' + e.toString()
+                    }
+                    
                 }
                 
             }
