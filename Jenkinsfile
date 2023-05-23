@@ -19,7 +19,7 @@ pipeline {
                 checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TaiBT2/app-nodejs.git']])
                 script {
                     try {
-                        sh 'aws ec2 terminate-instances  --instance-ids $(aws ec2 describe-instances --query "Reservations[].Instances[].InstanceId" --filters "Name=tag:project,Values=SERVER-*" --output text)'
+                        sh 'aws ec2 terminate-instances  --instance-ids $(aws ec2 describe-instances --query "Reservations[].Instances[].InstanceId" --filters "Name=tag:project,Values=*" --output text)'
                     }  catch (Exception e) {
                         echo 'Exception occurred: ' + e.toString()
                     }
