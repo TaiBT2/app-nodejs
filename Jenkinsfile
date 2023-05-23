@@ -27,6 +27,7 @@ pipeline {
                 
                 sh ' terraform -chdir=./devops-tool/infra init'
                 sh ' terraform -chdir=./devops-tool/infra apply -auto-approve -var "name_project=${PROJECT}"'
+                sh  ' sleep 10'
                 sh ' aws ec2 describe-instances \
                     --query "Reservations[*].Instances[*].PublicIpAddress" \
                     --filters "Name=tag:project","Values=${PROJECT}" \
