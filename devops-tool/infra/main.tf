@@ -60,5 +60,5 @@ resource "aws_instance" "server" {
 }
 
 output "key_pair" {
-  value = tls_private_key.key.private_key_pem
+  value = aws_instance.server.public_ip
 }
