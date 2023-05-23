@@ -52,16 +52,16 @@ pipeline {
                         sshagent(['ssh-server-admin']) {
                                 script {
                                     OlD_CONTAINER =sh (
-                                        script : "ssh -o StrictHostKeyChecking=no ubuntu@${HOST}  docker ps -q",
+                                        script : "ssh -o StrictHostKeyChecking=no ubuntu@${HOST} sudo docker ps -q",
                                         returnStdout: true
                                     )
                                     sh "echo ${OlD_CONTAINER}"
                                     try {
-                                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${HOST} docker rm -f ${OlD_CONTAINER}"
+                                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${HOST} sudo docker rm -f ${OlD_CONTAINER}"
                                     } catch (Exception e) {
                                         echo 'Exception occurred: ' + e.toString()
                                     } finally {
-                                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${HOST} docker run -d -p 4000:4000 ${registry}"
+                                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${HOST} sudo docker run -d -p 4000:4000 ${registry}"
                                     }
                                 }
                         }

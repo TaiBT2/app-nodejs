@@ -1,13 +1,4 @@
-# terraform {
-#   backend "s3" {
-#     bucket         = "terraform-series-s3-backend"
-#     key            = "terraform-jenkins"
-#     region         = "us-west-2"
-#     encrypt        = true
-#     role_arn       = "arn:aws:iam::<ACCOUNT_ID>:role/Terraform-SeriesS3BackendRole"
-#     dynamodb_table = "terraform-series-s3-backend"
-#   }
-# }
+
 
 provider "aws" {
   region = "us-east-1"
@@ -27,7 +18,7 @@ data "aws_ami" "ami" {
 resource "aws_instance" "server" {
   ami           = data.aws_ami.ami.id
   instance_type = "t3.micro"
-
+  key_name      = "bttai"
   lifecycle {
     create_before_destroy = true
   }
@@ -35,6 +26,26 @@ resource "aws_instance" "server" {
   tags = {
     project = "Server-1"
   }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update",
+      "sudo apt install apt-transport-https ca-certificates curl software-properties-common",
+      "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg",
+      "echo 'deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable' | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
+      "sudo apt update",
+      "apt-cache policy docker-ce",
+      "sudo apt install -y docker-ce"
+
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = tls_private_key.key.private_key_pem
+      host        = self.public_ip
+    }
+  }
+
 }
 
 output "public_ip" {
