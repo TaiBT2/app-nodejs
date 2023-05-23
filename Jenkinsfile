@@ -27,16 +27,16 @@ pipeline {
                 
                 sh ' terraform -chdir=./devops-tool/infra init'
                 sh ' terraform -chdir=./devops-tool/infra apply -auto-approve -var "name_project=${PROJECT}"'
-                sh  ' sleep 10'
+                sh ' sleep 10'
                 sh ' aws ec2 describe-instances \
                     --query "Reservations[*].Instances[*].PublicIpAddress" \
                     --filters "Name=tag:project","Values=${PROJECT}" \
                     --output text >> devops-tool/ansible/inventory.txt'
                 script {
-                    HOST= sh (
-                        script: "cat devops-tool/ansible/inventory.txt",
+                    HOST =sh (
+                        "cat devops-tool/ansible/inventory.txt",
                         returnStdout: true
-                    )
+                    ).trim()
                     sh 'echo ${HOST}'
                 }
                 
