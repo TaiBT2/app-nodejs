@@ -6,15 +6,13 @@ pipeline {
         OlD_CONTAINER = "dd";
         HOST = "54.197.3.92"
         PROJECT= "server_${dockerTag}"
+        AWS_ACCESS_KEY_ID     = credentials('Access-key-ID')
+        AWS_SECRET_ACCESS_KEY = credentials('Secret-access-key')
 	}
 
     stages {
         stage ("build infra") {
             agent { label 'agent' }
-            environment {
-                AWS_ACCESS_KEY_ID     = credentials('Access-key-ID')
-                AWS_SECRET_ACCESS_KEY = credentials('Secret-access-key')
-            }
             steps {
                 checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TaiBT2/app-nodejs.git']])
                 script {
@@ -38,13 +36,32 @@ pipeline {
                         script: "cat devops-tool/ansible/inventory.txt",
                         returnStdout: true)
                         HOST = ip
-                        sh 'echo ${HOST}'
                     } catch (Exception e) {
                         echo 'Exception occurred: ' + e.toString()
                     }
-                    
                 }
                 
+            }
+        }
+
+        stage ("configure infra") {
+            agent { label 'agent' }
+            // environment {
+            //     AWS_ACCESS_KEY_ID     = credentials('Access-key-ID')
+            //     AWS_SECRET_ACCESS_KEY = credentials('Secret-access-key')
+            // }
+            stages {
+                stage ("build infra ansible") {
+                    steps {
+                        sh 'echo "build infra ansible"'
+                    }
+                    
+                }
+                stage ("config server") {
+                    steps {
+                        sh 'echo "build infra ansible"'
+                    }
+                }
             }
         }
         stage ("build image and deploy server") {
