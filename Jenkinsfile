@@ -5,6 +5,7 @@ pipeline {
         registry ="taibt2docker/nodejs-app:${dockerTag}"
         OlD_CONTAINER = "dd";
         HOST = "54.197.3.92"
+        PROJECT= "SERVER-${dockerTag}"
 	}
 
     stages {
@@ -17,7 +18,7 @@ pipeline {
             steps {
                 checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TaiBT2/app-nodejs.git']])
                 sh ' terraform -chdir=./devops-tool/infra init'
-                sh ' terraform -chdir=./devops-tool/infra apply -auto-approve'
+                sh ' terraform -chdir=./devops-tool/infra apply -auto-approve -var "name_project=${}"'
                 sh ' aws ec2 describe-instances \
                     --query "Reservations[*].Instances[*].PublicIpAddress" \
                     --filters "Name=tag:project","Values=Server-1" \
