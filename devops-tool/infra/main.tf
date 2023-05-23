@@ -13,25 +13,11 @@ data "aws_ami" "ami" {
   owners = ["099720109477"]
 }
 
-resource "tls_private_key" "key" {
-  algorithm = "RSA"
-}
-
-resource "local_sensitive_file" "private_key" {
-  filename        = "/home/ubuntu/server.pem"
-  content         = tls_private_key.key.private_key_pem
-  file_permission = "0400"
-}
-
-resource "aws_key_pair" "key_pair" {
-  key_name   = "server"
-  public_key = tls_private_key.key.public_key_openssh
-}
 
 resource "aws_instance" "server" {
   ami           = data.aws_ami.ami.id
   instance_type = "t3.micro"
-  key_name      = aws_key_pair.key_pair.key_name
+  key_name      = "bttai"
   lifecycle {
     create_before_destroy = true
   }
@@ -39,26 +25,8 @@ resource "aws_instance" "server" {
   tags = {
     project = "${var.name_project}"
   }
-  
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get update"
-      "sudo apt-get install -y ca-certificates curl gnupg"
-      "sudo install -m 0755 -d /etc/apt/keyrings"
-      "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg"
-      "sudo chmod a+r /etc/apt/keyrings/docker.gpg"
-      "echo 'deb [arch='$(dpkg --print-architecture)' signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu '$(. /etc/os-release && echo '$VERSION_CODENAME')' stable' | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null"
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.key.private_key_pem
-      host        = self.public_ip
-    }
-  }
 }
 
-output "key_pair" {
+output "ec2" {
   value = aws_instance.server.public_ip
 }
