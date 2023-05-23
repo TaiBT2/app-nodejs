@@ -17,7 +17,14 @@ pipeline {
             }
             steps {
                 checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TaiBT2/app-nodejs.git']])
-                sh 'aws ec2 terminate-instances  --instance-ids $(aws ec2 describe-instances --query "Reservations[].Instances[].InstanceId" --filters "Name=tag:project,Values=SERVER-*" --output text)'
+                script {
+                    try {
+                        sh 'aws ec2 terminate-instances  --instance-ids $(aws ec2 describe-instances --query "Reservations[].Instances[].InstanceId" --filters "Name=tag:project,Values=SERVER-*" --output text)'
+                    }  catch (Exception e) {
+                        echo 'Exception occurred: ' + e.toString()
+                    }
+                }
+                
                 sh ' terraform -chdir=./devops-tool/infra init'
                 sh ' terraform -chdir=./devops-tool/infra apply -auto-approve -var "name_project=${PROJECT}"'
                 sh ' aws ec2 describe-instances \
