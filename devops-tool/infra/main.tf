@@ -13,6 +13,21 @@ data "aws_ami" "ami" {
   owners = ["099720109477"]
 }
 
+resource "tls_private_key" "key" {
+  algorithm = "RSA"
+}
+
+resource "local_sensitive_file" "private_key" {
+  filename        = "/home/ubuntu/server.pem"
+  content         = tls_private_key.key.private_key_pem
+  file_permission = "0400"
+}
+
+resource "aws_key_pair" "key_pair" {
+  key_name   = "server"
+  public_key = tls_private_key.key.public_key_openssh
+}
+
 resource "aws_instance" "server" {
   ami           = data.aws_ami.ami.id
   instance_type = "t3.micro"
@@ -34,9 +49,16 @@ resource "aws_instance" "server" {
       "apt-cache policy docker-ce",
       "sudo apt install -y docker-ce"
     ]
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = tls_private_key.key.private_key_pem
+      host        = self.public_ip
+    }
   }
 }
 
-output "public_ip" {
-  value = aws_instance.server.public_ip
+output "key_pair" {
+  value = tls_private_key.key.private_key_pem
 }
