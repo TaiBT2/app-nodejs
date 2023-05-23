@@ -35,7 +35,6 @@ pipeline {
             }
         }
         stage ("build image and deploy server") {
-            agent any
             stages {
                 stage ('build image') {
                     steps {
