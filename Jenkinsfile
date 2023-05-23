@@ -5,7 +5,7 @@ pipeline {
         registry ="taibt2docker/nodejs-app:${dockerTag}"
         OlD_CONTAINER = "dd";
         HOST = "54.197.3.92"
-        PROJECT= "SERVER-${dockerTag}"
+        PROJECT= "server_${dockerTag}"
 	}
 
     stages {
