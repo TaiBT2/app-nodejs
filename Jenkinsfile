@@ -35,7 +35,7 @@ pipeline {
                 script {
                     try {
                         def ip =sh (
-                        "cat devops-tool/ansible/inventory.txt",
+                        script: "cat devops-tool/ansible/inventory.txt",
                         returnStdout: true)
                         HOST = ip
                         sh 'echo ${HOST}'
