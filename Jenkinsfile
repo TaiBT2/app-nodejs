@@ -36,7 +36,7 @@ pipeline {
                     try {
                         def ip =sh (
                         "cat devops-tool/ansible/inventory.txt",
-                        returnStdout: true).trim()
+                        returnStdout: true)
                         HOST = ip
                         sh 'echo ${HOST}'
                     } catch (Exception e) {
