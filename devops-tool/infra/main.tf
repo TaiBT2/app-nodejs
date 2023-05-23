@@ -37,7 +37,7 @@ resource "aws_instance" "server" {
   }
 
   tags = {
-    project = "${name_project}"
+    project = "${var.name_project}"
   }
   provisioner "remote-exec" {
     inline = [
