@@ -8,8 +8,8 @@ pipeline {
 	}
 
     stages {
-        stage ("test agent") {
-            agent { label 'terraform-agent' }
+        stage ("build infra") {
+            agent { label 'agent' }
             environment {
                 AWS_ACCESS_KEY_ID     = credentials('Access-key-ID')
                 AWS_SECRET_ACCESS_KEY = credentials('Secret-access-key')
@@ -18,12 +18,21 @@ pipeline {
                 checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TaiBT2/app-nodejs.git']])
                 sh ' terraform -chdir=./devops-tool/infra init'
                 sh ' terraform -chdir=./devops-tool/infra apply -auto-approve'
-                sh " aws ec2 describe-instances \
-                    --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                    --filters 'Name=tag:project','Values=Server-1' \
-                    --output text >> devops-tool/ansible/inventory.txt"
-                sh 'cat devops-tool/ansible/inventory.txt'
+                sh ' aws ec2 describe-instances \
+                    --query "Reservations[*].Instances[*].PublicIpAddress" \
+                    --filters "Name=tag:project","Values=Server-1" \
+                    --output text >> devops-tool/ansible/inventory.txt'
+                script {
+                    HOST= sh (
+                        script: "cat devops-tool/ansible/inventory.txt",
+                        returnStdout: true
+                    )
+                }
+                sh 'echo ${HOST}'
             }
+        }
+        stage ("configure") {
+
         }
         stage ("build image and deploy server") {
             agent any
