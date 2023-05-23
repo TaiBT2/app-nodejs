@@ -40,6 +40,7 @@ resource "aws_instance" "server" {
     project = "${name_project}"
   }
   provisioner "remote-exec" {
+    command = "sleep 300"
     inline = [
       "sudo apt-get update",
       "sudo apt install apt-transport-https ca-certificates curl software-properties-common",
