@@ -1,5 +1,3 @@
-
-
 provider "aws" {
   region = "us-east-1"
 }
@@ -35,17 +33,8 @@ resource "aws_instance" "server" {
       "sudo apt update",
       "apt-cache policy docker-ce",
       "sudo apt install -y docker-ce"
-
     ]
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.key.private_key_pem
-      host        = self.public_ip
-    }
   }
-
 }
 
 output "public_ip" {
