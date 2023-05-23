@@ -31,7 +31,7 @@ resource "aws_key_pair" "key_pair" {
 resource "aws_instance" "server" {
   ami           = data.aws_ami.ami.id
   instance_type = "t3.micro"
-  key_name      = "bttai"
+  key_name      = aws_key_pair.key_pair.key_name
   lifecycle {
     create_before_destroy = true
   }
