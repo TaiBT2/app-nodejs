@@ -49,48 +49,8 @@ pipeline {
         }
 
         stage ("configure infra") {
-            agent { label 'agent' }
-            environment {
-                AWS_ACCESS_KEY_ID     = credentials('Access-key-ID')
-                AWS_SECRET_ACCESS_KEY = credentials('Secret-access-key')
-            }
-            stages {
-                stage ("build infra ansible") {
-                    steps {
-                        sh 'echo "build infra ansible"'
-                        checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TaiBT2/app-nodejs.git']])
-                        script {
-                            try {
-                                sh 'aws ec2 terminate-instances  --instance-ids $(aws ec2 describe-instances --query "Reservations[].Instances[].InstanceId" --filters "Name=tag:ansible,Values=*" --output text)'
-                            }  catch (Exception e) {
-                                echo 'Exception occurred: ' + e.toString()
-                            }
-                        }
-                        sh ' terraform -chdir=./devops-tool/ansible/infra init'
-                        sh ' terraform -chdir=./devops-tool/ansible/infra apply -auto-approve -var "name_project=ansible"'
-                        sh ' sleep 10'
-                        sh ' aws ec2 describe-instances \
-                            --query "Reservations[*].Instances[*].PublicIpAddress" \
-                            --filters "Name=tag:ansible","Values=ansible" \
-                            --output text >> devops-tool/ansible/ansible-server-ip.txt'
-                        script {
-                            try {
-                                def ip =sh (
-                                script: "cat devops-tool/ansible/inventory.txt",
-                                returnStdout: true)
-                                HOST = ip
-                            } catch (Exception e) {
-                                echo 'Exception occurred: ' + e.toString()
-                            }
-                        }
-                    }
-                    
-                }
-                stage ("config server") {
-                    steps {
-                        sh 'echo "build infra ansible"'
-                    }
-                }
+            steps {
+                sh "echo hello" 
             }
         }
         stage ("build image and deploy server") {
