@@ -13,7 +13,7 @@ pipeline {
 
     stages {
         stage ("build infra") {
-            agent { label 'agent' }
+            agent { label 'agent'}
             environment {
                 AWS_ACCESS_KEY_ID     = credentials('Access-key-ID')
                 AWS_SECRET_ACCESS_KEY = credentials('Secret-access-key')
@@ -45,20 +45,8 @@ pipeline {
                         echo 'Exception occurred: ' + e.toString()
                     }
                 }
+                sh 'ansible-playbook -i devops-tool/ansible/inventory.txt --private-key=$ANSIBLE_PRIVATE_KEY devops-tool/ansible/configure-server.yml'
                 
-            }
-        }
-
-        stage ("configure infra") {
-            agent { label 'agent' }
-            steps {
-                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TaiBT2/app-nodejs.git']])
-                sh '''
-                pwd
-                ls
-                cat /home/ubuntu/workspace/app/devops-tool/ansible/inventory.txt 
-                '''
-                sh 'ansible-playbook -i /home/ubuntu/workspace/app/devops-tool/ansible/inventory.txt --private-key=$ANSIBLE_PRIVATE_KEY /home/ubuntu/workspace/app/devops-tool/ansible/configure-server.yml'
             }
         }
         stage ("build image and deploy server") {
