@@ -49,6 +49,7 @@ pipeline {
         }
 
         stage ("configure infra") {
+            agent { label 'agent' }
             steps {
                 sh "echo hello" 
                 ansiblePlaybook credentialsId: 'ssh-agent', installation: 'Ansible', inventory: 'ansible/inventory.txt', playbook: 'ansible/configure-server.yml'
