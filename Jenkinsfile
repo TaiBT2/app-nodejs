@@ -43,7 +43,7 @@ pipeline {
                         echo 'Exception occurred: ' + e.toString()
                     }
                 }
-                sh 'ansible-playbook -i devops-tool/ansible/inventory.txt --private-key=${ANSIBLE_PRIVATE_KEY} devops-tool/ansible/configure-server.yml'
+                sshec2 ()
                 
             }
         }
@@ -92,4 +92,16 @@ def getDockerTag(){
     def tag  = sh script: 'git rev-parse HEAD', returnStdout: true
     tag=tag.substring(0,4)
     return tag
+}
+
+@NonCPS
+def sshec2 (){
+    while (true){
+        try {
+            sh 'ansible-playbook -i devops-tool/ansible/inventory.txt --private-key=${ANSIBLE_PRIVATE_KEY} devops-tool/ansible/configure-server.yml'  
+            break;
+        } catch (Exception e) {
+        echo 'Exception occurred: ' + e.toString()
+        }
+    }
 }
