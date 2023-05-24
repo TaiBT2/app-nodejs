@@ -53,7 +53,7 @@ pipeline {
             agent { label 'agent' }
             steps {
                 sh "echo hello" 
-                ansiblePlaybook credentialsId: 'ssh-agent', installation: 'Ansible', inventory: '/home/ubuntu/workspace/app/ansible/inventory.txt', playbook: '/home/ubuntu/workspace/app/ansible/configure-server.yml'
+                // ansiblePlaybook credentialsId: 'ssh-agent', installation: 'Ansible', inventory: '/home/ubuntu/workspace/app/ansible/inventory.txt', playbook: '/home/ubuntu/workspace/app/ansible/configure-server.yml'
                 sh 'ansible-playbook -i /home/ubuntu/workspace/app/ansible/inventory.txt --private-key=$ANSIBLE_PRIVATE_KEY /home/ubuntu/workspace/app/ansible/configure-server.yml'
             }
         }
