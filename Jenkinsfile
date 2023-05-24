@@ -5,10 +5,7 @@ pipeline {
         registry ="taibt2docker/nodejs-app:${dockerTag}"
         OlD_CONTAINER = "dd";
         HOST = "54.197.3.92"
-        PROJECT= "server_${dockerTag}"
-        AWS_ACCESS_KEY_ID     = credentials('Access-key-ID')
-        AWS_SECRET_ACCESS_KEY = credentials('Secret-access-key')
-        ANSIBLE_PRIVATE_KEY   = credentials('ssh-server-admin')
+        PROJECT= "server_${dockerTag}"  
 	}
 
     stages {
@@ -17,6 +14,7 @@ pipeline {
             environment {
                 AWS_ACCESS_KEY_ID     = credentials('Access-key-ID')
                 AWS_SECRET_ACCESS_KEY = credentials('Secret-access-key')
+                ANSIBLE_PRIVATE_KEY   = credentials('ssh-server-admin')
             }
             steps {
                 checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TaiBT2/app-nodejs.git']])
@@ -45,7 +43,7 @@ pipeline {
                         echo 'Exception occurred: ' + e.toString()
                     }
                 }
-                sh 'ansible-playbook -i devops-tool/ansible/inventory.txt --private-key=$ANSIBLE_PRIVATE_KEY devops-tool/ansible/configure-server.yml'
+                sh 'ansible-playbook -i devops-tool/ansible/inventory.txt --private-key=${ANSIBLE_PRIVATE_KEY} devops-tool/ansible/configure-server.yml'
                 
             }
         }
