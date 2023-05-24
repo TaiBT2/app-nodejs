@@ -53,6 +53,7 @@ pipeline {
             agent { label 'agent' }
             steps {
                 sh "echo hello" 
+                sh "cat /home/ubuntu/workspace/app/devops-tool/ansible/inventory.txt "
                 // ansiblePlaybook credentialsId: 'ssh-agent', installation: 'Ansible', inventory: '/home/ubuntu/workspace/app/ansible/inventory.txt', playbook: '/home/ubuntu/workspace/app/ansible/configure-server.yml'
                 sh 'ansible-playbook -i /home/ubuntu/workspace/app/devops-tool/ansible/inventory.txt --private-key=$ANSIBLE_PRIVATE_KEY /home/ubuntu/workspace/app/devops-tool/ansible/configure-server.yml'
             }
@@ -76,16 +77,16 @@ pipeline {
                         sshagent(['ssh-server-admin']) {
                                 script {
                                     OlD_CONTAINER =sh (
-                                        script : "ssh -o StrictHostKeyChecking=no ubuntu@${HOST} sudo docker ps -q",
+                                        script : "ssh -o StrictHostKeyChecking=no ubuntu@${HOST} docker ps -q",
                                         returnStdout: true
                                     )
                                     sh "echo ${OlD_CONTAINER}"
                                     try {
-                                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${HOST} sudo docker rm -f ${OlD_CONTAINER}"
+                                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${HOST} docker rm -f ${OlD_CONTAINER}"
                                     } catch (Exception e) {
                                         echo 'Exception occurred: ' + e.toString()
                                     } finally {
-                                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${HOST} sudo docker run -d -p 4000:4000 ${registry}"
+                                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${HOST} docker run -d -p 4000:4000 ${registry}"
                                     }
                                 }
                         }
