@@ -54,7 +54,7 @@ pipeline {
             steps {
                 checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TaiBT2/app-nodejs.git']])
                 sh "echo hello" 
-                sh "echo ${HOST} >> /home/ubuntu/workspace/app/devops-tool/ansible/inventory.txt"
+                sh "echo ${HOST}"
                 sh "cat /home/ubuntu/workspace/app/devops-tool/ansible/inventory.txt "
                 // ansiblePlaybook credentialsId: 'ssh-agent', installation: 'Ansible', inventory: '/home/ubuntu/workspace/app/ansible/inventory.txt', playbook: '/home/ubuntu/workspace/app/ansible/configure-server.yml'
                 sh 'ansible-playbook -i /home/ubuntu/workspace/app/devops-tool/ansible/inventory.txt --private-key=$ANSIBLE_PRIVATE_KEY /home/ubuntu/workspace/app/devops-tool/ansible/configure-server.yml'
