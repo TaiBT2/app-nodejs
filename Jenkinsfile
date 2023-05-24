@@ -8,6 +8,7 @@ pipeline {
         PROJECT= "server_${dockerTag}"
         AWS_ACCESS_KEY_ID     = credentials('Access-key-ID')
         AWS_SECRET_ACCESS_KEY = credentials('Secret-access-key')
+        ANSIBLE_PRIVATE_KEY   = credentials('ssh-server-admin')
 	}
 
     stages {
@@ -53,6 +54,7 @@ pipeline {
             steps {
                 sh "echo hello" 
                 ansiblePlaybook credentialsId: 'ssh-agent', installation: 'Ansible', inventory: '/home/ubuntu/workspace/app/ansible/inventory.txt', playbook: '/home/ubuntu/workspace/app/ansible/configure-server.yml'
+                sh 'ansible-playbook -i /home/ubuntu/workspace/app/ansible/inventory.txt --private-key=$ANSIBLE_PRIVATE_KEY /home/ubuntu/workspace/app/ansible/configure-server.yml'
             }
         }
         stage ("build image and deploy server") {
