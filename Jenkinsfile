@@ -51,6 +51,7 @@ pipeline {
         stage ("configure infra") {
             steps {
                 sh "echo hello" 
+                ansiblePlaybook credentialsId: 'ssh-agent', installation: 'Ansible', inventory: 'ansible/inventory.txt', playbook: 'ansible/configure-server.yml'
             }
         }
         stage ("build image and deploy server") {
